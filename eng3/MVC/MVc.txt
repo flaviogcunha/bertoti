@@ -1,0 +1,154 @@
+import java.util.ArrayList;
+import java.util.List;
+
+interface AnimalObserver {
+    void update(String mensagem);
+}
+
+interface ComportamentoAnimal {
+    String executarComportamento();
+}
+
+class ComportamentoVoo implements ComportamentoAnimal {
+    public String executarComportamento() {
+        return "voando alto";
+    }
+}
+
+class ComportamentoCorrida implements ComportamentoAnimal {
+    public String executarComportamento() {
+        return "correndo rápido";
+    }
+}
+
+interface ComponenteAnimal {
+    void mostrar();
+}
+
+class AnimalIndividual implements ComponenteAnimal {
+    private String nome;
+    
+    public AnimalIndividual(String nome) {
+        this.nome = nome;
+    }
+    
+    public void mostrar() {
+        System.out.println("Animal: " + nome);
+    }
+}
+
+class GrupoAnimais implements ComponenteAnimal {
+    private String nomeGrupo;
+    private List<ComponenteAnimal> animais = new ArrayList<>();
+    
+    public GrupoAnimais(String nomeGrupo) {
+        this.nomeGrupo = nomeGrupo;
+    }
+    
+    public void adicionar(ComponenteAnimal animal) {
+        animais.add(animal);
+    }
+    
+    public void mostrar() {
+        System.out.println("\nGrupo: " + nomeGrupo);
+        for (ComponenteAnimal animal : animais) {
+            animal.mostrar();
+        }
+    }
+}
+
+class AnimalModel {
+    private String estado;
+    private List<AnimalObserver> observadores = new ArrayList<>();
+    private ComportamentoAnimal comportamento;
+    
+    public AnimalModel(ComportamentoAnimal comportamento) {
+        this.comportamento = comportamento;
+    }
+    
+    public void setComportamento(ComportamentoAnimal comportamento) {
+        this.comportamento = comportamento;
+    }
+    
+    public void addObservador(AnimalObserver observador) {
+        observadores.add(observador);
+    }
+    
+    public void atualizarEstado(String novoEstado) {
+        this.estado = novoEstado + " (" + comportamento.executarComportamento() + ")";
+        notificarObservadores();
+    }
+    
+    private void notificarObservadores() {
+        for (AnimalObserver observador : observadores) {
+            observador.update(estado);
+        }
+    }
+    
+    public ComponenteAnimal criarEstrutura() {
+        GrupoAnimais grupo = new GrupoAnimais("Animais Monitorados");
+        grupo.adicionar(new AnimalIndividual(estado));
+        return grupo;
+    }
+}
+
+class AnimalView implements AnimalObserver {
+    private AnimalModel model;
+    
+    public AnimalView(AnimalModel model) {
+        this.model = model;
+        model.addObservador(this);
+    }
+    
+    public void update(String mensagem) {
+        System.out.println("\n[VISUALIZAÇÃO] Atualização:");
+        mostrarAnimais();
+    }
+    
+    public void mostrarAnimais() {
+        ComponenteAnimal estrutura = model.criarEstrutura();
+        estrutura.mostrar();
+    }
+}
+
+class AnimalController {
+    private AnimalModel model;
+    private AnimalView view;
+    
+    public AnimalController(AnimalModel model, AnimalView view) {
+        this.model = model;
+        this.view = view;
+    }
+    
+    public void setComportamento(ComportamentoAnimal comportamento) {
+        model.setComportamento(comportamento);
+    }
+    
+    public void atualizarAnimal(String estado) {
+        model.atualizarEstado(estado);
+    }
+}
+
+public class SistemaAnimais {
+    public static void main(String[] args) {
+        AnimalModel model = new AnimalModel(new ComportamentoVoo());
+        AnimalView view = new AnimalView(model);
+        AnimalController controller = new AnimalController(model, view);
+        
+        controller.atualizarAnimal("Águia avistada");
+        
+        controller.setComportamento(new ComportamentoCorrida());
+        controller.atualizarAnimal("Leão em movimento");
+        
+        GrupoAnimais zoo = new GrupoAnimais("Zoológico");
+        zoo.adicionar(model.criarEstrutura());
+        
+        GrupoAnimais felinos = new GrupoAnimais("Felinos");
+        felinos.adicionar(new AnimalIndividual("Leão"));
+        felinos.adicionar(new AnimalIndividual("Tigre"));
+        zoo.adicionar(felinos);
+        
+        System.out.println("\n--- Inventário Completo ---");
+        zoo.mostrar();
+    }
+}

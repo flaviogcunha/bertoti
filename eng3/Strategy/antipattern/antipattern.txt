@@ -1,0 +1,38 @@
+class AnimalRuim {
+    private String nome;
+    private String tipoMovimento;
+
+    public AnimalRuim(String nome, String tipoMovimento) {
+        this.nome = nome;
+        this.tipoMovimento = tipoMovimento;
+    }
+
+    public void mover() {
+        System.out.print(nome + ": ");
+        
+        if (tipoMovimento.equals("VOAR")) {
+            System.out.println("Batendo asas e voando pelo céu!");
+        } 
+        else if (tipoMovimento.equals("CORRER")) {
+            System.out.println("Correndo rapidamente no chão!");
+        }
+        else if (tipoMovimento.equals("NADAR")) {
+            System.out.println("Nadando graciosamente na água!");
+        }
+        else {
+            System.out.println("Não sei como me mover!");
+        }
+    }
+}
+
+public class ZoologicoRuim {
+    public static void main(String[] args) {
+        AnimalRuim aguia = new AnimalRuim("Águia", "VOAR");
+        AnimalRuim leao = new AnimalRuim("Leão", "CORRER");
+        AnimalRuim peixe = new AnimalRuim("Peixe", "NADAR");
+
+        aguia.mover();
+        leao.mover();
+        peixe.mover();
+    }
+}

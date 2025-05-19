@@ -1,0 +1,58 @@
+interface EstrategiaMovimento {
+    void mover();
+}
+
+class Voar implements EstrategiaMovimento {
+    public void mover() {
+        System.out.println("Batendo asas e voando pelo céu!");
+    }
+}
+
+class Correr implements EstrategiaMovimento {
+    public void mover() {
+        System.out.println("Correndo rapidamente no chão!");
+    }
+}
+
+class Nadar implements EstrategiaMovimento {
+    public void mover() {
+        System.out.println("Nadando graciosamente na água!");
+    }
+}
+
+class Animal {
+    private String nome;
+    private EstrategiaMovimento estrategiaMovimento;
+
+    public Animal(String nome, EstrategiaMovimento estrategia) {
+        this.nome = nome;
+        this.estrategiaMovimento = estrategia;
+    }
+
+    public void setEstrategiaMovimento(EstrategiaMovimento estrategia) {
+        this.estrategiaMovimento = estrategia;
+    }
+
+    public void mover() {
+        System.out.print(nome + ": ");
+        estrategiaMovimento.mover();
+    }
+}
+
+public class Zoologico {
+    public static void main(String[] args) {
+        Animal aguia = new Animal("Águia", new Voar());
+        Animal leao = new Animal("Leão", new Correr());
+        Animal peixe = new Animal("Peixe", new Nadar());
+
+        aguia.mover();
+        leao.mover();
+        peixe.mover();
+
+        Animal pinguim = new Animal("Pinguim", new Nadar());
+        pinguim.mover();
+        
+        pinguim.setEstrategiaMovimento(new Correr());
+        pinguim.mover();
+    }
+}

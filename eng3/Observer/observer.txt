@@ -1,0 +1,111 @@
+import java.util.ArrayList;
+import java.util.List;
+
+// Interface Observer
+public interface Observer {
+    void update();
+}
+
+// Classe abstrata Subject (Observable)
+abstract class Subject {
+    private List<Observer> observers = new ArrayList<>();
+    
+    public void attach(Observer observer) {
+        observers.add(observer);
+    }
+    
+    public void detach(Observer observer) {
+        observers.remove(observer);
+    }
+    
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
+    }
+}
+
+// Concrete Subject
+class WeatherStation extends Subject {
+    private int temperature;
+    private int humidity;
+    
+    public int getTemperature() {
+        return temperature;
+    }
+    
+    public int getHumidity() {
+        return humidity;
+    }
+    
+    public void setMeasurements(int temperature, int humidity) {
+        this.temperature = temperature;
+        this.humidity = humidity;
+        notifyObservers();
+    }
+}
+
+// Concrete Observers
+class TemperatureDisplay implements Observer {
+    private WeatherStation weatherStation;
+    
+    public TemperatureDisplay(WeatherStation weatherStation) {
+        this.weatherStation = weatherStation;
+        this.weatherStation.attach(this);
+    }
+    
+    @Override
+    public void update() {
+        System.out.println("[Display] Temperatura atual: " + weatherStation.getTemperature() + "°C");
+    }
+}
+
+class HumidityDisplay implements Observer {
+    private WeatherStation weatherStation;
+    
+    public HumidityDisplay(WeatherStation weatherStation) {
+        this.weatherStation = weatherStation;
+        this.weatherStation.attach(this);
+    }
+    
+    @Override
+    public void update() {
+        System.out.println("[Display] Umidade atual: " + weatherStation.getHumidity() + "%");
+    }
+}
+
+class WeatherMobileApp implements Observer {
+    private WeatherStation weatherStation;
+    
+    public WeatherMobileApp(WeatherStation weatherStation) {
+        this.weatherStation = weatherStation;
+        this.weatherStation.attach(this);
+    }
+    
+    @Override
+    public void update() {
+        System.out.println("[App] Atualização: " + 
+                          weatherStation.getTemperature() + "°C, " + 
+                          weatherStation.getHumidity() + "% de umidade");
+    }
+}
+
+// Classe principal para demonstração
+public class WeatherMonitoringSystem {
+    public static void main(String[] args) {
+        WeatherStation weatherStation = new WeatherStation();
+        
+        new TemperatureDisplay(weatherStation);
+        new HumidityDisplay(weatherStation);
+        new WeatherMobileApp(weatherStation);
+        
+        System.out.println("--- Primeira atualização ---");
+        weatherStation.setMeasurements(25, 65);
+        
+        System.out.println("\n--- Segunda atualização ---");
+        weatherStation.setMeasurements(28, 60);
+        
+        System.out.println("\n--- Terceira atualização ---");
+        weatherStation.setMeasurements(30, 55);
+    }
+}
